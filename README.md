@@ -9,7 +9,7 @@ SRS document for the Spottrr senior project, written in LaTeX.
 
 ## Getting Started
 
-1. Open `main.code-workspace` in VS Code
+1. Open the project folder in VS Code
 2. Edit project variables in `document.tex`
 3. Write content in the `body/` directory
-4. Build to generate `document.pdf`
+4. Build to generate `out/document.pdf`
