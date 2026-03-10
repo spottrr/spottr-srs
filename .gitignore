@@ -24,6 +24,12 @@
 ## Generated if empty string is given at "Please type another file name for output:"
 .pdf
 
+## Output PDF
+document.pdf
+
+## LaTeX Workshop output directory
+out/
+
 ## Bibliography auxiliary files (bibtex/biblatex/biber):
 *.bbl
 *.bbl-SAVE-ERROR
