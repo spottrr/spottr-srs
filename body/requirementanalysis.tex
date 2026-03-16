@@ -3,43 +3,219 @@
 
 \section{Stakeholder Analysis}
 \label{section:stakeholder-analysis}
-<TIP: List your stakeholders for your project here/>
 
-Stakeholders are individuals, groups, or entities that
-have an interest, concern, or stake in a particular project, decision,
-organization, or system. These are individuals or groups who can affect or be
-affected by the outcomes of your project.
+The following stakeholders have been identified for the system:
 
+\begin{enumerate}
+    \item \textbf{Security Investigators.} Law enforcement officers and private security analysts who need to search through surveillance footage to locate suspects, track movements, or find evidence related to incidents. They require fast, accurate retrieval and the ability to search using descriptions or reference photos.
+
+    \item \textbf{Retail Loss Prevention Staff.} Personnel responsible for monitoring store footage to identify theft, policy violations, or suspicious behavior. They need to search for specific items, actions, or individuals across multiple camera feeds without watching hours of video manually.
+
+    \item \textbf{Operations Managers.} Facility or business managers who use surveillance footage to review incidents, verify reports, or monitor workflows. They need a simple interface that does not require technical expertise in computer vision.
+
+    \item \textbf{Small Business Owners.} Owners of shops, restaurants, or other establishments who have basic CCTV setups and occasionally need to look up specific moments in their footage, such as verifying a customer complaint, checking a delivery, or reviewing an incident. They have no technical background and need a tool that is as simple as typing a search query.
+
+    \item \textbf{System Administrators.} Technical staff responsible for deploying and maintaining the system, managing video storage, and ensuring the processing pipeline runs reliably.
+\end{enumerate}
 
 \section{User Stories and Use Cases}
 \label{section:user-stories-use-cases}
-<TIP: For each stakeholder, write user stories that capture what
-they need from the system: "As a [stakeholder], I want to [action] so that [benefit]."
-For your most important user stories, expand them into use cases.
-A use case is a detailed description of how a system
-interacts with an external entity (such as a user or another system) to
-accomplish a specific goal. Use cases provide a high-level view of the
-functionality of a system and help in capturing and documenting its
-requirements from the perspective of end users.
 
-Make sure to use the
-appropriate type of use case for each scenario (brief, casual, and fully-dressed
-use case). />
+\subsection{User Stories}
+
+\begin{enumerate}
+    \item As a \textbf{security investigator}, I want to search footage by describing a person or object in natural language so that I can quickly locate relevant moments without manually reviewing hours of video.
+    \item As a \textbf{security investigator}, I want to upload a photo of a suspect and find all frames where that person appears so that I can track their movements across cameras.
+    \item As a \textbf{retail loss prevention staff member}, I want to search for a specific item (e.g., ``red backpack'') across all camera feeds so that I can find when and where it appeared.
+    \item As an \textbf{operations manager}, I want to click on a search result and jump directly to that moment in the video so that I can review the context around the event.
+    \item As a \textbf{security investigator}, I want to select a detected face and see every frame where that individual appears so that I can build a timeline of their activity.
+    \item As a \textbf{system administrator}, I want to upload video files and have them automatically processed and indexed so that the footage becomes searchable without manual intervention.
+\end{enumerate}
+
+\subsection{Use Cases}
+
+\begin{table}[H]
+\centering
+\begin{tabular}{|l|p{10cm}|}
+\hline
+\textbf{Use Case}       & UC-1: Text-Based Video Search \\ \hline
+\textbf{Primary Actor}   & Security Investigator \\ \hline
+\textbf{Preconditions}   & Video footage has been uploaded and processed. The segmentation and encoding pipeline has completed, and region embeddings are stored in the vector database. \\ \hline
+\textbf{Postconditions}  & The user receives a ranked list of video moments matching their query, each linked to the corresponding timestamp. \\ \hline
+\textbf{Main Success Scenario} &
+    \begin{enumerate}[nosep, leftmargin=*]
+        \item The user navigates to the search interface.
+        \item The user enters a natural language query (e.g., ``person carrying a cardboard box'').
+        \item The system encodes the query text using CLIP.
+        \item The system performs cosine similarity search against stored region embeddings.
+        \item The system returns a ranked list of matching results with thumbnail previews and timestamps.
+        \item The user clicks on a result to jump to that moment in the video player.
+    \end{enumerate} \\ \hline
+\textbf{Alternative Flows} &
+    \begin{itemize}[nosep, leftmargin=*]
+        \item \textit{No results found:} The system displays a message indicating no matches and suggests broadening the query.
+        \item \textit{Low-confidence results:} The system returns results but flags them with lower similarity scores.
+    \end{itemize} \\ \hline
+\end{tabular}
+\caption{UC-1: Text-Based Video Search}
+\label{tab:uc1}
+\end{table}
+
+\begin{table}[H]
+\centering
+\begin{tabular}{|l|p{10cm}|}
+\hline
+\textbf{Use Case}       & UC-2: Image-Based Video Search \\ \hline
+\textbf{Primary Actor}   & Security Investigator \\ \hline
+\textbf{Preconditions}   & Video footage has been uploaded and processed. Region embeddings are stored in the vector database. \\ \hline
+\textbf{Postconditions}  & The user receives a ranked list of visually similar regions with timestamps. \\ \hline
+\textbf{Main Success Scenario} &
+    \begin{enumerate}[nosep, leftmargin=*]
+        \item The user navigates to the search interface.
+        \item The user uploads a reference image (e.g., a photo of a suspect or a specific item).
+        \item The system encodes the uploaded image using CLIP's image encoder.
+        \item The system performs cosine similarity search against stored region embeddings.
+        \item The system returns a ranked list of matching results with thumbnails, similarity scores, and timestamps.
+        \item The user clicks on a result to jump to that moment in the video player.
+    \end{enumerate} \\ \hline
+\textbf{Alternative Flows} &
+    \begin{itemize}[nosep, leftmargin=*]
+        \item \textit{Invalid file format:} The system rejects the upload and prompts the user to provide a supported image format (JPEG, PNG, WebP).
+        \item \textit{No results found:} The system displays a message indicating no visual matches were found.
+    \end{itemize} \\ \hline
+\end{tabular}
+\caption{UC-2: Image-Based Video Search}
+\label{tab:uc2}
+\end{table}
+
+\begin{table}[H]
+\centering
+\begin{tabular}{|l|p{10cm}|}
+\hline
+\textbf{Use Case}       & UC-3: Face Search \\ \hline
+\textbf{Primary Actor}   & Security Investigator \\ \hline
+\textbf{Preconditions}   & Video footage has been uploaded and processed. Face detection and clustering have completed. \\ \hline
+\textbf{Postconditions}  & The user receives a chronological list of all frames containing the selected individual. \\ \hline
+\textbf{Main Success Scenario} &
+    \begin{enumerate}[nosep, leftmargin=*]
+        \item The user navigates to the face gallery page.
+        \item The system displays all detected face clusters, each shown as a representative thumbnail with the number of appearances.
+        \item The user selects a face cluster.
+        \item The system retrieves all frames where that individual was detected using InsightFace embeddings.
+        \item The system displays results in chronological order with timestamps and source camera labels.
+        \item The user clicks on a result to view the footage at that moment.
+    \end{enumerate} \\ \hline
+\textbf{Alternative Flows} &
+    \begin{itemize}[nosep, leftmargin=*]
+        \item \textit{Incorrect clustering:} The system has grouped two different people into one cluster. The user manually splits the cluster into separate identities.
+        \item \textit{No faces detected:} The footage contains no detectable faces (e.g., low resolution, no people present). The face gallery is empty.
+    \end{itemize} \\ \hline
+\end{tabular}
+\caption{UC-3: Face Search}
+\label{tab:uc3}
+\end{table}
+
+\begin{table}[H]
+\centering
+\begin{tabular}{|l|p{10cm}|}
+\hline
+\textbf{Use Case}       & UC-4: Video Upload and Processing \\ \hline
+\textbf{Primary Actor}   & End User \\ \hline
+\textbf{Preconditions}   & The system is running and the user is authenticated. \\ \hline
+\textbf{Postconditions}  & The uploaded footage is fully indexed and searchable. \\ \hline
+\textbf{Main Success Scenario} &
+    \begin{enumerate}[nosep, leftmargin=*]
+        \item The user navigates to the upload page.
+        \item The user selects one or more video files to upload.
+        \item The system validates the file format and begins uploading.
+        \item The system starts the processing pipeline: frame extraction, SAM segmentation, CLIP encoding, and InsightFace face detection.
+        \item The system displays a progress indicator showing the current stage and percentage complete.
+        \item Once processing finishes, the system marks the video as searchable and notifies the user.
+    \end{enumerate} \\ \hline
+\textbf{Alternative Flows} &
+    \begin{itemize}[nosep, leftmargin=*]
+        \item \textit{Unsupported format:} The system rejects the file and displays a list of supported formats (MP4, AVI, MOV, MKV).
+        \item \textit{Processing failure:} The pipeline encounters a corrupted frame or runs out of memory. The system logs the error, skips the problematic frame, and continues processing the remaining frames.
+        \item \textit{User cancellation:} The user cancels the processing job. The system stops the pipeline and discards partially processed data.
+    \end{itemize} \\ \hline
+\end{tabular}
+\caption{UC-4: Video Upload and Processing}
+\label{tab:uc4}
+\end{table}
+
+\begin{table}[H]
+\centering
+\begin{tabular}{|l|p{10cm}|}
+\hline
+\textbf{Use Case}       & UC-5: Multi-Camera Cross Search \\ \hline
+\textbf{Primary Actor}   & Security Investigator \\ \hline
+\textbf{Description}     & A user performs a text or image search across footage from multiple cameras simultaneously. The system returns results from all indexed cameras, sorted by similarity score. Each result indicates which camera the match came from, allowing the user to trace the movement of a person or object across different locations. \\ \hline
+\textbf{Preconditions}   & Footage from multiple cameras has been uploaded, processed, and indexed. \\ \hline
+\textbf{Postconditions}  & The user receives a unified, ranked list of results spanning all cameras with source camera labels and timestamps. \\ \hline
+\end{tabular}
+\caption{UC-5: Multi-Camera Cross Search}
+\label{tab:uc5}
+\end{table}
+
+\begin{table}[H]
+\centering
+\begin{tabular}{|l|p{10cm}|}
+\hline
+\textbf{Use Case}       & UC-6: Time-Filtered Search \\ \hline
+\textbf{Primary Actor}   & Security Investigator \\ \hline
+\textbf{Description}     & A user applies a date and time range filter before or after performing a search query. The system restricts results to only those frames that fall within the specified time window. This allows users to narrow down results when they know the approximate time of an incident. \\ \hline
+\textbf{Preconditions}   & Video footage has been uploaded and processed. The footage contains valid timestamp metadata. \\ \hline
+\textbf{Postconditions}  & The user receives search results limited to the specified time range. \\ \hline
+\end{tabular}
+\caption{UC-6: Time-Filtered Search}
+\label{tab:uc6}
+\end{table}
+
+\begin{table}[H]
+\centering
+\begin{tabular}{|l|p{10cm}|}
+\hline
+\textbf{Use Case}       & UC-7: Export Search Results \\ \hline
+\textbf{Primary Actor}   & Security Investigator \\ \hline
+\textbf{Description}     & After performing a search, the user selects one or more results and exports them. The system generates downloadable files containing the matched frames as screenshots or short video clips, along with metadata (timestamp, source camera, similarity score). This allows users to compile evidence for reports or legal proceedings. \\ \hline
+\textbf{Preconditions}   & A search has been performed and results are displayed. \\ \hline
+\textbf{Postconditions}  & The user downloads a file containing the selected results with associated metadata. \\ \hline
+\end{tabular}
+\caption{UC-7: Export Search Results}
+\label{tab:uc7}
+\end{table}
 
 \section{Use Case Diagrams}
 \label{section:use-case-diagrams}
-<TIP: Include a UML Use Case Diagram that shows all actors and
-their relationships to the use cases you described.
-Also provide the written description for each use case. />
+
+\imgplaceholder{0.8\textwidth}{5cm}{Use Case Diagram}
+
+The system involves two primary actors: the \textbf{End User} (security investigators, loss prevention staff, operations managers, and small business owners) and the \textbf{System Administrator}. The End User interacts with all core functionality including uploading footage and searching it. The System Administrator handles system-level tasks such as server configuration, user management, and pipeline monitoring. The main use cases are:
+
+\begin{itemize}
+    \item Upload and process video footage (End User)
+    \item Search by text query (End User)
+    \item Search by image query (End User)
+    \item Search by face identity (End User)
+    \item Multi-camera cross search (End User)
+    \item Time-filtered search (End User)
+    \item Export search results (End User)
+    \item View and navigate video results (End User)
+    \item Manage system configuration and users (System Administrator)
+    \item Monitor processing pipeline (System Administrator)
+\end{itemize}
 
 \section{User Interface Design}
 \label{section:user-interface-design}
-<TIP: Put the initial design of your application here. You can
-showcase a detailed design of a specific page or a sitemap of your application.
-See an example below./>
 
-\begin{figure}[h]
-    \centering
-    \includegraphics[width=0.8\textwidth]{examples/user-interface-design.png}
-    \caption{User Interface Design}
-\end{figure}
+\imgplaceholder{0.8\textwidth}{5cm}{UI Mockups}
+
+The interface is organized around three main views:
+
+\begin{enumerate}
+    \item \textbf{Search View.} The primary interface where users enter text queries or upload reference images. Results are displayed as a grid of thumbnails with similarity scores and timestamps. Each result is clickable and links to the video player at the corresponding moment.
+
+    \item \textbf{Face Gallery View.} A grid of face clusters detected across all uploaded footage. Each cluster shows a representative face thumbnail and the number of appearances. Clicking a cluster opens a chronological timeline of all frames containing that individual.
+
+    \item \textbf{Video Player View.} An embedded video player with standard playback controls. When accessed from a search result, the player automatically seeks to the relevant timestamp. A timeline strip below the player highlights all moments that matched the current query.
+\end{enumerate}

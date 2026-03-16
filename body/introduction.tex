@@ -4,80 +4,77 @@
 \section{Background}
 \label{section:background}
 
-<TIP: 
-A background chapter in a book serves the purpose of providing essential context, information, or history that is relevant
-to the overall understanding of the book's subject matter. This chapter typically appears early in the book and aims to set the
-stage for the reader by offering background details that are crucial for comprehending the main narrative.
-/>
+Video surveillance has become a fundamental part of modern security infrastructure. Businesses, governments, and public institutions rely on closed-circuit television (CCTV) systems to monitor spaces, deter crime, and support investigations. A single retail store equipped with 16 cameras generates roughly 384 hours of footage every day. Across an entire city or enterprise, the volume of recorded video quickly reaches a scale that no human team can feasibly review in full.
+
+Despite the sheer amount of footage being captured, the ability to retrieve useful information from it remains limited. According to Ashby \cite{ashby2017value}, only 29\% of criminal cases that involved CCTV footage actually produced useful evidence for investigators. The problem is not a lack of recordings but rather the absence of efficient tools for searching through them.
+
+Conventional video analytics systems rely on predefined object categories such as ``person,'' ``car,'' or ``bag.'' These closed-vocabulary systems can only detect what they were explicitly trained to recognize. If an investigator needs to find a ``man in a red shirt carrying a box,'' the system has no way to process that query. This gap between what users want to search for and what existing systems can understand represents a significant bottleneck in video surveillance workflows.
+
+Recent advances in computer vision have introduced models capable of understanding open-ended, natural language descriptions of visual content. CLIP (Contrastive Language-Image Pretraining), developed by Radford et al. \cite{radford2021learning}, maps both images and text into a shared embedding space, enabling similarity-based retrieval without the need for predefined labels. Meanwhile, SAM (Segment Anything Model) by Kirillov et al. \cite{kirillov2023segment} can segment any object in an image without prior training on specific categories. Together, these models open the door to a new kind of video search that is flexible, open-vocabulary, and capable of handling the diverse queries that real users have.
 
 \section{Problem Statement}
 \label{section:problem-statement}
 
-<TIP: 
-A problem statement refers to a clear central issue,
-challenge, or question that the project aims to address or explore. It is a
-declaration that highlights the specific problem the author intends to examine,
-discuss, or solve throughout the course of the project.
-/>
+Current approaches to searching video footage suffer from two core limitations.
+First, traditional video analytics tools operate on a closed vocabulary. They can detect and classify objects only within a fixed set of categories defined during training. This means that any query falling outside the predefined label set simply cannot be answered. For real-world use cases like security investigations, retail loss prevention, or traffic monitoring, the range of possible queries is far too broad to be captured by a static category list.
+
+Second, existing CLIP-based retrieval methods that do support open-vocabulary search typically encode entire frames as single vectors. While this approach works for simple queries, it struggles when the target object is small, partially occluded, or surrounded by visually dominant elements. The embedding of the full frame dilutes the signal of individual objects, leading to missed results or poor ranking.
+
+These limitations mean that users who need to find specific moments in large volumes of footage are left with manual review or unreliable automated tools. There is a clear need for a system that combines open-vocabulary understanding with fine-grained, object-level retrieval to make video search both flexible and accurate.
 
 \section{Solution Overview}
 \label{section:solution-overview}
 
-<TIP: 
-A software solution overview provides a high-level and
-concise description of a software product or system. It serves as an
-introduction to the software, offering a glimpse into its key features,
-functionalities, and the problems it aims to address. This overview is often
-presented in documentation, marketing materials, or other communication
-channels to give stakeholders, potential users, or decision-makers a quick
-understanding of what the software does and why it is valuable.
-/>
+This project proposes an open-vocabulary video search system that allows users to upload footage, describe what they are looking for using natural language or reference images, and retrieve the exact moments where matching content appears. Rather than encoding entire frames, the system uses a region-level approach that segments individual objects before encoding them, resulting in more precise and reliable retrieval.
+
+The system works in four stages:
+
+\begin{enumerate}
+    \item \textbf{Segment.} SAM processes each video frame to detect and isolate every distinct object or region.
+    \item \textbf{Encode.} CLIP encodes each segmented region into a vector embedding that exists in the same semantic space as text.
+    \item \textbf{Store.} All region embeddings are stored alongside their frame timestamps in a vector database optimized for similarity search.
+    \item \textbf{Search.} When a user submits a text or image query, the system encodes the query and retrieves the most similar region embeddings using cosine similarity, returning results ranked by relevance with direct links to the corresponding timestamps.
+\end{enumerate}
+
+For face-specific search, the system integrates InsightFace \cite{deng2019arcface} for face detection and recognition. Detected faces are clustered by identity, allowing users to select a person and instantly see every frame in which that individual appears.
+
+This combination of segmentation-first encoding and open-vocabulary matching allows the system to handle queries that traditional surveillance tools cannot, from vague natural language descriptions to image-based lookups of specific objects or people.
 
 \subsection{Features}
 \label{subsection:features}
 
 \begin{enumerate}[leftmargin=80pt]
-    \item Feature Name: Short Description of Feature
-    \item Feature Name: Short Description of Feature
+    \item Open-Vocabulary Text Search: Search for any object, person, or scene using natural language queries without predefined categories.
+    \item Image-Based Query: Upload a reference photo and find every matching appearance in the footage.
+    \item Face Recognition and Tracking: Automatically detect, cluster, and track unique faces across all uploaded footage.
+    \item Timestamp Navigation: Click on any search result to jump directly to the exact moment in the video.
+    \item Multi-Camera Support: Upload and search across footage from multiple cameras in a single workspace.
 \end{enumerate}
 
 \section{Target User}
 \label{section:target-user}
 
-<TIP: 
-The target user in a software project refers to the specific
-group or demographic of individuals for whom the software is designed and
-developed. Identifying the target user is a crucial step in the software
-development process as it helps the development team tailor the software to
-meet the needs, preferences, and requirements of that particular user group.
-Understanding the characteristics, behaviors, and expectations of the target
-users is essential for creating a user-friendly and effective software solution.
+This system is designed for users who need to locate specific events, objects, or people within large volumes of video footage. The primary target users include:
 
-Here are some key aspects related to defining the target user in a software project:
+\begin{itemize}
+    \item \textbf{Security personnel and investigators} who review surveillance footage to find evidence or identify suspects. These users often work under time pressure and need to search through hours or days of recordings from multiple cameras.
+    \item \textbf{Retail loss prevention teams} who monitor store footage for theft, policy violations, or unusual behavior. They benefit from the ability to search for specific items or actions without manually scrubbing through recordings.
+    \item \textbf{Operations and facility managers} who use camera footage to monitor workflows, verify incidents, or review events. They need a tool that is straightforward to use without requiring technical expertise in computer vision or machine learning.
+    \item \textbf{Small business owners} such as shop, restaurant, or grocery store owners who have basic CCTV setups and occasionally need to look up specific moments, such as verifying a customer complaint or checking a delivery. They have no technical background and need a search experience as simple as typing a query.
+\end{itemize}
 
-Demographics: This includes factors such as age, gender,
-occupation, education level, and other demographic characteristics. Different
-age groups or professional backgrounds may have distinct preferences and
-requirements when it comes to software usability.
-
-Skill Level: Consideration of the users' technical proficiency and
-familiarity with similar software or technology. The level of technical expertise
-can influence the complexity of the user interface, the need for tutorials or
-documentation, and other user support features.
-
-Industry or Domain: For software solutions designed for specific
-industries or domains, understanding the unique challenges, workflows, and
-terminology within that industry is crucial. Tailoring the software to meet
-industry-specific needs is often necessary.
-/>
+These users share a common need: the ability to describe what they are looking for in plain language and get results quickly, without relying on rigid category-based filters or manual frame-by-frame review.
 
 \section{Terminology}
 \label{section:terminology}
 
-<TIP: 
-Terminology refers to the specific language, jargon, or
-specialized vocabulary used to describe concepts, ideas, or subjects within a
-particular field or domain. The use of terminology is often essential for clarity
-and precision, especially in books that cover technical, scientific, academic, or
-specialized topics.
-/>
+\begin{description}[style=nextline, leftmargin=2cm]
+    \item[CLIP] Contrastive Language-Image Pretraining. A model developed by OpenAI that learns visual concepts from natural language supervision, mapping both images and text into a shared vector space for similarity-based retrieval.
+    \item[SAM] Segment Anything Model. A promptable segmentation model developed by Meta AI that can identify and isolate any object in an image without category-specific training.
+    \item[InsightFace] An open-source face analysis toolkit that provides face detection, recognition, and alignment capabilities, used in this system for identity-based face search.
+    \item[Embedding] A numerical vector representation of data (such as an image region or a text query) in a high-dimensional space, where semantically similar items are positioned close together.
+    \item[Cosine Similarity] A metric that measures the similarity between two vectors by computing the cosine of the angle between them. Values range from -1 to 1, where 1 indicates identical direction.
+    \item[Vector Database] A database system optimized for storing and querying high-dimensional vector embeddings, enabling fast nearest-neighbor search over large collections.
+    \item[Open Vocabulary] A property of a system that allows it to recognize or search for concepts beyond a fixed, predefined set of categories, typically by leveraging language-vision models.
+    \item[Region-Level Search] A retrieval approach that segments an image into individual object regions and encodes each region separately, as opposed to encoding the entire image as a single unit.
+\end{description}

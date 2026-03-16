@@ -1,77 +1,71 @@
-% Styling for KU SKE SRS Documentation along with new commands to specify unusual text sizes.
+% Styling for KU SKE SRS Documentation
+% Clean, modern styling based on 12pt base
 
 \NeedsTeXFormat{LaTeX2e}
 \ProcessOptions\relax
 
-% set page geometry
+% set page geometry - clean margins similar to article style
 \usepackage[a4paper]{geometry}
 \AtBeginDocument{
     \newgeometry{
-        hmargin={1.5in, 1in},
-        vmargin={1.5in, 1in}
+        width=150mm,
+        top=25mm,
+        bottom=25mm
     }
 }
 
 \widowpenalty=10000
 \clubpenalty=10000
-\flushbottom
 \sloppy
 
+% simple page numbers at bottom center
 \usepackage{fancyhdr}
 \fancyhf{}
 \pagestyle{fancy}
 \renewcommand{\headrulewidth}{0pt}
-\rhead{\thepage}
+\fancyfoot[C]{\thepage}
 
-% renew fonts
+% renew fonts - 12pt base, standard LaTeX scaling
 \renewcommand{\normalsize}{
-    % 14pt - base normal font
-    \@setfontsize\normalsize\@xivpt{17}%
-    \abovedisplayskip 14\p@ \@plus3\p@ \@minus7\p@
-    \abovedisplayshortskip \z@ \@plus4\p@
-    \belowdisplayshortskip 7\p@ \@plus4\p@ \@minus3\p@
+    \@setfontsize\normalsize\@xiipt{14.5}%
+    \abovedisplayskip 12\p@ \@plus3\p@ \@minus7\p@
+    \abovedisplayshortskip \z@ \@plus3\p@
+    \belowdisplayshortskip 6.5\p@ \@plus3.5\p@ \@minus3\p@
     \belowdisplayskip \abovedisplayskip
     \let\@listi\@listI
 }
 \normalsize
 \renewcommand{\small}{
-    % 12pt - optional small font
-    \@setfontsize\small\@xiipt{14.5}%
-    \abovedisplayskip 12\p@ \@plus3\p@ \@minus7\p@
+    \@setfontsize\small\@xpt{12}%
+    \abovedisplayskip 10\p@ \@plus2\p@ \@minus5\p@
     \abovedisplayshortskip \z@ \@plus3\p@
-    \belowdisplayshortskip 6.5\p@ \@plus3.5\p@ \@minus3\p@
+    \belowdisplayshortskip 6\p@ \@plus3\p@ \@minus3\p@
     \def\@listi{\leftmargin\leftmargini
-        \topsep 9\p@ \@plus3\p@ \@minus5\p@
-        \parsep 4.5\p@ \@plus2\p@ \@minus\p@
+        \topsep 6\p@ \@plus2\p@ \@minus2\p@
+        \parsep 3\p@ \@plus2\p@ \@minus\p@
         \itemsep \parsep}%
     \belowdisplayskip \abovedisplayskip
 }
 \newcommand{\moderate}{
-    % 16pt - medium font size
-    \@setfontsize\moderate{16}\@xxpt
+    \@setfontsize\moderate\@xivpt{18}
 }
 \renewcommand{\large}{
-    % 18pt - large font size
-    \@setfontsize\large{18}{22}
+    \@setfontsize\large{14.4}{18}
 }
 \renewcommand{\Large}{
-    % 20pt - Large font size
-    \@setfontsize\Large\@xxpt{25}
+    \@setfontsize\Large{17.28}{22}
 }
 \renewcommand{\LARGE}{
-    % 22pt - LARGE font size
-    \@setfontsize\LARGE{22}{27}
+    \@setfontsize\LARGE{20.74}{25}
 }
 \renewcommand{\huge}{
-    % 24pt - huge font size
-    \@setfontsize\huge\@xxvpt{30}
+    \@setfontsize\huge{24.88}{30}
 }
 \renewcommand{\Huge}{
-    % 36pt - Huge font size
-    \@setfontsize\Huge{35.83}{41}
+    \@setfontsize\Huge{24.88}{30}
 }
 
-%% reformat the chapters & sections
+%% reformat the chapters & sections - cleaner, less vertical space
 % chapter-level
 \renewcommand{\chapter}{\thispagestyle{fancy}%
     \global\@topnum\z@
@@ -86,59 +80,80 @@
                       \addcontentsline{toc}{chapter}{#1}%
                     \fi
                     \chaptermark{#1}%
-                    %\addtocontents{lof}{\protect\addvspace{10\p@}}% Remove blank spaces
-                    %\addtocontents{lot}{\protect\addvspace{10\p@}}%
                     \if@twocolumn
                       \@topnewpage[\@makechapterhead{#2}]%
                     \else
                       \@makechapterhead{#2}%
                       \@afterheading
                     \fi}
-% adjust spaces on top and bottom, change font size
+
+% chapter heading - centered
 \def\@makechapterhead#1{%
-    \begin{center}%
-        \vspace*{0.5in}%
-        {\parindent \z@ \normalfont
+    \begin{center}
+        {\normalfont
             \ifnum \c@secnumdepth >\m@ne
-                \large\bfseries \@chapapp\space \thechapter
+                \Large\bfseries \@chapapp\space \thechapter
                 \par\nobreak
-                \vskip 10\p@
+                \vskip 8\p@
             \fi
             \interlinepenalty\@M
-            \moderate \bfseries #1\par\nobreak
-            \vskip 21\p@
+            \LARGE \bfseries #1\par\nobreak
         }
     \end{center}
+    \vskip 16\p@
 }
-% change font size
+
+% unnumbered chapter heading - centered
 \def\@makeschapterhead#1{%
-    \begin{center}%
-        \vspace*{0.5in}%
-        {\parindent \z@
-            \normalfont
+    \begin{center}
+        {\normalfont
             \interlinepenalty\@M
-            \Large \bfseries  #1\par\nobreak
-            \vskip 21\p@
+            \LARGE \bfseries #1\par\nobreak
         }
     \end{center}
+    \vskip 16\p@
 }
 
-% section-level
+% section-level - clean, standard sizes
 \renewcommand\section{\@startsection {section}{1}{\z@}%
-                                   {-3.5ex \@plus -1ex \@minus -.2ex}%
-                                   {2.3ex \@plus.2ex}%
-                                   {\normalfont\moderate\bfseries}}
+                                   {-3ex \@plus -1ex \@minus -.2ex}%
+                                   {2ex \@plus.2ex}%
+                                   {\normalfont\Large\bfseries}}
 
-% subsection-level
+% subsection-level - no indent offset
 \renewcommand\subsection{\@startsection{subsection}{2}{\z@}%
-                                     {-3.25ex\@plus -1ex \@minus -.2ex}%
+                                     {-2.5ex\@plus -1ex \@minus -.2ex}%
                                      {1.5ex \@plus .2ex}%
-                                     {\normalfont\normalsize\bfseries\leftskip 40pt}}
+                                     {\normalfont\large\bfseries}}
+
+% subsubsection-level
+\renewcommand\subsubsection{\@startsection{subsubsection}{3}{\z@}%
+                                     {-2ex\@plus -1ex \@minus -.2ex}%
+                                     {1ex \@plus .2ex}%
+                                     {\normalfont\normalsize\bfseries}}
+
+%% image placeholder command
+% Usage: \imgplaceholder{width}{height}{caption text}
+\usepackage{xcolor}
+\newcommand{\imgplaceholder}[3]{%
+    \begin{figure}[H]
+        \centering
+        \fcolorbox{black!40}{black!8}{%
+            \parbox{#1}{%
+                \vspace{#2}
+                \centering
+                \textcolor{black!40}{\large\bfseries #3}
+                \vspace{#2}
+            }%
+        }
+        \caption{#3}
+    \end{figure}
+}
 
 %% modify TOC
 \renewcommand\contentsname{Table of Contents}
 \makeatletter
-\renewcommand\@dotsep{200}
+\renewcommand\@dotsep{4.5}
 \makeatother
 
 \endinput
