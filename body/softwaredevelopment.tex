@@ -3,28 +3,69 @@
 
 \section{Software Development Methodology}
 \label{section:software-development-methodology}
-<TIP: Describe your software development methodology in this section. />
+
+This project follows an iterative development methodology. Work is divided into short cycles, each focused on building and validating a specific component of the system. At the end of each cycle, the component is tested and integrated before moving to the next.
+
+The development is organized into the following phases:
+
+\begin{table}[H]
+    \centering
+    \begin{tabularx}{\textwidth}{c l X}
+        \toprule
+        \textbf{Phase} & \textbf{Name} & \textbf{Description} \\
+        \midrule
+        1 & Core AI Development & Integrate SAM segmentation, SigLIP2 encoding, InsightFace face detection, and the Temporal Aggregation Module (TAM). \\[6pt]
+        2 & Backend \& Infrastructure & Set up FAISS vector database, file storage, and automated indexing pipeline with Celery task queue. \\[6pt]
+        3 & Search Engine \& API & Build the REST API for search (text, image, face), hybrid scoring, and identity clustering. \\[6pt]
+        4 & Web Interface \& Integration & Develop the React frontend for video upload, search, and result navigation. Full system integration. \\[6pt]
+        5 & Evaluation \& Finalization & Benchmark on COCO val2017 and UCA, performance tuning, and final documentation. \\
+        \bottomrule
+    \end{tabularx}
+    \caption{Development phases.}
+    \label{tab:dev-phases}
+\end{table}
 
 \section{Technology Stack}
 \label{section:technology-stack}
-<TIP: Describe your technology stack here. See the following example from ThaiProgrammer.org />
-\begin{figure}[h]
+
+Table~\ref{tab:tech-stack} summarizes the technologies used in each layer of the system.
+
+\begin{table}[H]
     \centering
-    \includegraphics[width=0.5\textwidth]{examples/tech-stack.png}
-    \caption{Example technology stack}
-\end{figure}
+    \begin{tabular}{ll}
+        \toprule
+        \textbf{Layer} & \textbf{Technology} \\
+        \midrule
+        Frontend & React, TypeScript, Tailwind CSS \\
+        Backend & FastAPI (Python) \\
+        Task Queue & Celery with Redis \\
+        Vector Database & FAISS \\
+        File Storage & Local filesystem / S3-compatible \\
+        Segmentation & SAM (ViT-H) \\
+        Vision-Language Encoder & SigLIP2 (ViT-B/16-256) via OpenCLIP \\
+        Face Recognition & InsightFace (ArcFace) \\
+        Temporal Aggregation & TAM (custom, PyTorch) \\
+        Deep Learning Framework & PyTorch \\
+        \bottomrule
+    \end{tabular}
+    \caption{Technology stack.}
+    \label{tab:tech-stack}
+\end{table}
 
 \section{Coding Standards}
 \label{section:coding-standards}
-<TIP: Describe your coding standard for this project here. />
+
+\begin{itemize}
+    \item \textbf{Python (backend and AI pipeline).} Follow PEP~8 style conventions. Use type hints for function signatures. Format code with \texttt{black} and lint with \texttt{ruff}.
+    \item \textbf{TypeScript (frontend).} Follow ESLint recommended rules with Prettier formatting. Use strict TypeScript mode.
+    \item \textbf{Version control.} Use Git with conventional commit messages (e.g., \texttt{feat:}, \texttt{fix:}, \texttt{refactor:}). Feature branches are merged via pull requests.
+    \item \textbf{Configuration.} Sensitive values (API keys, paths) are stored in environment variables, never committed to the repository.
+\end{itemize}
 
 \section{Schedule}
 \label{section:schedule}
-<TIP: Show the schedule of your project.
-Use a Gantt chart. The items should agree with features
-you listed in Chapter 1. />
+% TODO: Add Gantt chart
 
 \section{Progress Tracking Report}
 \label{section:progress-tracking-report}
-<TIP: Show that you have been working on this project overtime.
-It can be in the form of a burndown chart or a contribution graph from GitHub./>
+% TODO: Add burndown chart or GitHub contribution graph
