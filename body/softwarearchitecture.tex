@@ -68,7 +68,7 @@ The user uploads a video file through the Web App. The REST API validates the fi
 
 \begin{figure}[H]
     \centering
-    \includegraphics[width=0.85\textwidth]{assets/UC-4 - Sequence Diagram.png}
+    \includegraphics[width=0.85\textwidth]{assets/ingestion-seq.png}
     \caption{Sequence diagram for video upload and indexing (UC-4).}
     \label{fig:seq-upload}
 \end{figure}
@@ -149,14 +149,12 @@ Adding SAM segmentation improves both encoders, and the stronger encoder (SigLIP
 \subsubsection{Rule-Based Deduplication for Video}
 \label{subsubsec:dedup}
 
-The region-level approach described above works well for static images, but video introduces a new challenge. When SAM tracks an object across consecutive frames, the same person walking through a 5-minute clip might appear in 300 frames, producing 300 near-identical embeddings in the index. This causes three problems: the index grows unnecessarily large, queries slow down, and search results are filled with duplicates of the same object.
-
-To address this, the system uses a two-stage rule-based deduplication approach:
+In video, the same object can appear across hundreds of frames, producing near-identical embeddings that bloat the index and fill search results with duplicates. The system addresses this with a two-stage rule-based deduplication approach:
 
 \begin{enumerate}
-    \item \textbf{Frame-level filtering.} Each frame is encoded by the vision-language model and compared against the previous frame's embedding. If the cosine similarity exceeds a threshold, the frame is considered near-identical and skipped. This reduces the number of frames that need to be processed by SAM, saving computation time.
+    \item \textbf{Frame-level filtering.} Each frame is encoded by the image-text encoder (SigLIP2) and compared against the previous frame. If similarity exceeds a threshold, the frame is skipped, reducing the number of frames SAM needs to process.
 
-    \item \textbf{Object-level deduplication.} For the remaining frames, tracked object embeddings are compared within a sliding window (e.g., 5 frames with 3-frame overlap). If the embeddings of the same tracked object across frames are sufficiently similar, only the best representative is kept, selected based on the highest SAM confidence score. This ensures each unique object appearance is stored once rather than hundreds of times.
+    \item \textbf{Object-level deduplication.} Tracked object embeddings are compared within a sliding window (5 frames, 3-frame overlap). Only the best representative per object is kept, selected by highest SAM confidence score.
 \end{enumerate}
 
 This rule-based approach requires no training data or learned weights. It extends region-based retrieval from static images to video in a simple and practical way. Existing work like SAM-CLIP Search \cite{mulani2025samclip} operates only on static images; this deduplication mechanism is what makes the pipeline practical for real surveillance footage where objects move, get occluded, and appear across hundreds of frames.
