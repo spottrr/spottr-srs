@@ -23,7 +23,7 @@ This project proposes an open-vocabulary video search system that allows users t
 The system uses a region-level hybrid approach with the following stages:
 
 \begin{enumerate}
-    \item \textbf{Extract.} Keyframes are extracted at 1--5 frames per second.
+    \item \textbf{Extract.} Keyframes are extracted at 1 frame per second.
     \item \textbf{Segment.} Each frame is processed by an object segmentation model to isolate every distinct object or region.
     \item \textbf{Encode.} A vision-language encoder encodes each segmented region (with context padding) and the whole frame into vector embeddings in the same semantic space as text.
     \item \textbf{Deduplicate.} For video, a rule-based deduplication process filters near-identical frames and groups tracked object embeddings across consecutive frames, keeping only the best representative embedding per object to reduce index bloat and duplicate results.
@@ -62,7 +62,7 @@ All users have access to the same features. The system must be simple enough tha
     \item[SigLIP2] An improved vision-language model by Google \cite{zhai2025siglip2} with better training objectives and higher retrieval accuracy than CLIP.
     \item[SAM 2] Segment Anything Model 2 \cite{ravi2024sam2}. Segments any object in images and videos without category-specific training, and tracks objects across frames using a memory mechanism.
     \item[Object Region Embedding] A vector embedding produced by encoding an individual segmented object region through a vision-language model.
-    \item[Face Similarity] The process of detecting faces, generating face embeddings, and comparing them via vector similarity to match an individual against a watchlist reference photo.
+    \item[Face Matching] The process of detecting faces, generating face embeddings, and comparing them via vector similarity to match an individual against a watchlist reference photo.
     \item[Watchlist] A user-curated set of reference photos of specific individuals the user is authorized to search for. Face embeddings are extracted from these photos and matched against faces detected in the footage at search time.
     \item[Embedding] A numerical vector representing data in a high-dimensional space where similar items are close together.
     \item[Cosine Similarity] A metric measuring similarity between two vectors by the cosine of the angle between them.

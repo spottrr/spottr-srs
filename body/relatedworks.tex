@@ -16,7 +16,7 @@ We evaluated existing video search solutions across vocabulary flexibility and s
         Avigilon (Motorola) & Closed & Object-level & Yes \\
         Twelve Labs & Open & Segment-level & No \\
         \midrule
-        \textbf{Ours} & Open & Region-level & Yes \\
+        \textbf{Ours} & Open & Region-level & Yes (watchlist) \\
         \bottomrule
     \end{tabular}
     \caption{Comparison of video search tools by vocabulary type, search granularity, and face search capability.}
@@ -27,7 +27,7 @@ We evaluated existing video search solutions across vocabulary flexibility and s
 
 \textbf{Twelve Labs} uses proprietary multimodal models to enable open-vocabulary search at the video segment level. However, it processes video segments as a whole rather than isolating individual objects, lacking the per-object precision that explicit segmentation provides.
 
-Our system differentiates itself by combining open-vocabulary search with region-level granularity and face recognition. By segmenting objects with SAM 2 before encoding with a vision-language model, the system preserves the visual signal of individual items regardless of their size or position within the frame.
+Our system differentiates itself by combining open-vocabulary search with region-level granularity and watchlist-based face matching. By segmenting objects with SAM 2 before encoding with a vision-language model, the system preserves the visual signal of individual items regardless of their size or position within the frame.
 
 \section{Literature Review}
 \label{section:literature-review}
@@ -48,7 +48,7 @@ Kirillov et al. \cite{kirillov2023segment} developed SAM, a foundation model tra
 
 \subsection{SAM-CLIP Search}
 
-Mulani et al. \cite{mulani2025samclip} combined SAM segmentation with CLIP encoding for region-based image retrieval. On standard benchmarks (COCO, Flickr30K, Fashion200K), their approach achieved 92\% retrieval accuracy and 89.3\% Recall@5, compared to 85\% accuracy with CLIP-only retrieval. Our system builds on this approach with three key improvements: (1) replacing CLIP with SigLIP2 for stronger encoding, (2) adding context padding to crops and including the whole image as a region, and (3) using hybrid max-scoring that fuses region-level and whole-image scores. Our preliminary benchmark on COCO val2017 (simple + small object queries) shows SAM + SigLIP2 achieves 0.764 Recall@5 compared to 0.644 for SAM + CLIP, confirming that the region-based approach with a stronger encoder yields better results.
+Mulani et al. \cite{mulani2025samclip} combined SAM segmentation with CLIP encoding for region-based image retrieval. On standard benchmarks (COCO, Flickr30K, Fashion200K), their approach achieved 92\% retrieval accuracy and 89.3\% Recall@5, compared to 85\% accuracy with CLIP-only retrieval. Our system builds on this approach with three key improvements: (1) replacing CLIP with SigLIP2 for stronger encoding, (2) adding context padding to crops and including the whole image as a region, and (3) using hybrid max-scoring that fuses region-level and whole-image scores. Our preliminary benchmark on COCO val2017 (simple + small object queries), conducted with the original SAM \cite{kirillov2023segment}, shows SAM + SigLIP2 achieves 0.764 Recall@5 compared to 0.644 for SAM + CLIP, confirming that the region-based approach with a stronger encoder yields better results.
 
 \subsection{ArcFace: Face Similarity}
 

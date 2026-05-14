@@ -14,7 +14,7 @@ The development is organized into the following phases:
         \toprule
         \textbf{Phase} & \textbf{Name} & \textbf{Description} \\
         \midrule
-        1 & Core AI Development & Integrate SAM 2 segmentation and tracking, SigLIP2 encoding, face similarity detection, and rule-based deduplication for video. \\[6pt]
+        1 & Core AI Development & Integrate SAM 2 segmentation and tracking, SigLIP2 encoding, face matching, and rule-based deduplication for video. \\[6pt]
         2 & Backend \& Infrastructure & Set up vector database, file storage, and automated indexing pipeline with Celery task queue. \\[6pt]
         3 & Search Engine \& API & Build the REST API for search (text, image, face), hybrid scoring, and watchlist-based face matching. \\[6pt]
         4 & Web Interface \& Integration & Develop the React frontend for video upload, search, and result navigation. Full system integration. \\[6pt]
@@ -43,7 +43,7 @@ Table~\ref{tab:tech-stack} summarizes the technologies used in each layer of the
         File Storage & Local filesystem / S3-compatible \\
         Segmentation & SAM 2 (Hiera) \\
         Vision-Language Encoder & SigLIP2 (ViT-B/16-256) via OpenCLIP \\
-        Face Similarity & InsightFace (ArcFace) \\
+        Face Matching & InsightFace (ArcFace) \\
         Deduplication & Rule-based (frame similarity + sliding window) \\
         Deep Learning Framework & PyTorch \\
         \bottomrule
@@ -65,7 +65,7 @@ Table~\ref{tab:tech-stack} summarizes the technologies used in each layer of the
 \section{Schedule}
 \label{section:schedule}
 
-The project spans two periods: April 2026 (pre-cooperative education) and January to March 2027 (cooperative education). Figure~\ref{fig:gantt-chart} shows the planned schedule broken down by phase.
+The project spans two periods: April 2026 (pre-cooperative education) and January to March 2027 (cooperative education). The development phases listed in Table~\ref{tab:dev-phases} describe the scope of work; some phases span both periods. Figure~\ref{fig:gantt-chart} shows when each component is scheduled.
 
 \begin{figure}[H]
     \centering

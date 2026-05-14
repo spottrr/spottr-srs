@@ -7,14 +7,14 @@
 The following stakeholders have been identified for the system:
 
 \begin{enumerate}
-    \item \textbf{Investigators.} Security personnel, law enforcement officers, and loss prevention staff who actively search footage for specific people, objects, or events. Their primary concern is retrieval accuracy and the ability to use natural language, reference images, and face recognition to locate evidence quickly.
+    \item \textbf{Investigators.} Security personnel, law enforcement officers, and loss prevention staff who actively search footage for specific people, objects, or events. Their primary concern is retrieval accuracy and the ability to use natural language, reference images, and watchlist-based face matching to locate evidence quickly.
 
     \item \textbf{Facility Operators.} Business owners, operations managers, and other non-technical users who review footage to verify incidents, check deliveries, or monitor daily operations. Their primary concern is ease of use, and the system must be operable without technical expertise.
 
     \item \textbf{System Administrator.} Technical staff responsible for deploying and maintaining the system, managing video storage, and ensuring the processing pipeline runs reliably.
 \end{enumerate}
 
-Both Investigators and Facility Operators have access to all features (upload, search, face recognition, export). They differ in their priorities, not their permissions.
+Both Investigators and Facility Operators have access to all features (upload, search, face matching, export). They differ in their priorities, not their permissions.
 
 \section{User Stories and Use Cases}
 \label{section:user-stories-use-cases}
@@ -244,7 +244,7 @@ The system involves two actors: the \textbf{User} and the \textbf{System Adminis
 \section{User Interface Design}
 \label{section:user-interface-design}
 
-The following mockups were designed in Figma to establish the visual direction and interaction flow before development. They represent the intended layout and functionality, not the final implementation. Sample images used in the mockups are sourced from the COCO dataset (search results), publicly available CCTV footage (footage thumbnails), and AI-generated faces from thispersondoesnotexist.com (face gallery). All sample images are intentionally blurred for privacy.
+The following mockups were designed in Figma to establish the visual direction and interaction flow before development. They represent the intended layout and functionality, not the final implementation. Sample images used in the mockups are sourced from the COCO dataset (search results), publicly available CCTV footage (footage thumbnails), and AI-generated faces from thispersondoesnotexist.com (watchlist reference photos). All sample images are intentionally blurred for privacy.
 
 The interface is organized around four main pages.
 
