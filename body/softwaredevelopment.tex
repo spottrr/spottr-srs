@@ -16,7 +16,7 @@ The development is organized into the following phases:
         \midrule
         1 & Core AI Development & Integrate SAM segmentation, SigLIP2 encoding, face similarity detection, and rule-based deduplication for video. \\[6pt]
         2 & Backend \& Infrastructure & Set up vector database, file storage, and automated indexing pipeline with Celery task queue. \\[6pt]
-        3 & Search Engine \& API & Build the REST API for search (text, image, face), hybrid scoring, and identity clustering. \\[6pt]
+        3 & Search Engine \& API & Build the REST API for search (text, image, face), hybrid scoring, and watchlist-based face matching. \\[6pt]
         4 & Web Interface \& Integration & Develop the React frontend for video upload, search, and result navigation. Full system integration. \\[6pt]
         5 & Evaluation \& Finalization & Benchmark on COCO val2017 and UCA, performance tuning, and final documentation. \\
         \bottomrule
@@ -74,7 +74,7 @@ The project spans two periods: April 2026 (pre-cooperative education) and Januar
     \label{fig:gantt-chart}
 \end{figure}
 
-The first period focuses on core AI development: integrating SAM segmentation, SigLIP2 encoding, face similarity detection, and implementing rule-based deduplication for video. The second period covers backend infrastructure (vector database, task queue, automated indexing), search engine and API logic (hybrid scoring, identity clustering), web interface development, and final evaluation with benchmarking and documentation.
+The first period focuses on the core perception pipeline: integrating SAM segmentation with tracking, SigLIP2 region encoding, and an initial React frontend demo for upload, search, and result display. The second period covers the remaining AI work (InsightFace integration, rule-based deduplication, benchmarking and performance tuning), backend infrastructure (vector database, task queue, automated indexing), search engine and API logic (hybrid scoring, watchlist-based face matching, multi-camera), and the full web interface with video player, timestamp navigation, and final system integration.
 
 % \section{Progress Tracking Report}
 % \label{section:progress-tracking-report}

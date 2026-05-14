@@ -52,7 +52,7 @@ Mulani et al. \cite{mulani2025samclip} combined SAM segmentation with CLIP encod
 
 \subsection{ArcFace: Face Similarity}
 
-Deng et al. \cite{deng2019arcface} introduced ArcFace, an angular margin loss for face recognition that produces highly discriminative embeddings. InsightFace is the open-source toolkit implementing ArcFace along with face detection and alignment. In our system, face similarity is used for face detection, identity embedding, and clustering, allowing users to select a face and retrieve all frames containing that individual.
+Deng et al. \cite{deng2019arcface} introduced ArcFace, an angular margin loss for face recognition that produces highly discriminative embeddings. InsightFace is the open-source toolkit implementing ArcFace along with face detection and alignment. In our system, face similarity supports watchlist-based search: face embeddings extracted from user-provided reference photos are matched against face embeddings detected in the footage, allowing users to retrieve all frames containing a specific individual they have a legitimate basis to identify.
 
 \subsection{The Value of CCTV in Investigations}
 
