@@ -128,7 +128,7 @@ Both Investigators and Facility Operators have access to all features (upload, s
         \item The user selects one or more video files to upload.
         \item The system validates the file format and begins uploading.
         \item Once the upload completes, the system queues an asynchronous background job for processing. The user is free to navigate away or continue using the application.
-        \item The background job extracts keyframes at 1--5 FPS, runs SAM segmentation \cite{kirillov2023segment}, SigLIP2 encoding \cite{zhai2025siglip2}, rule-based deduplication (see Section~\ref{subsubsec:dedup}), and face detection \cite{deng2019arcface} on each frame.
+        \item The background job extracts keyframes at 1 FPS, runs SAM 2 segmentation and tracking \cite{ravi2024sam2}, SigLIP2 encoding \cite{zhai2025siglip2}, rule-based deduplication (see Section~\ref{subsubsec:dedup}), and face detection \cite{deng2019arcface} on each frame.
         \item The system displays a progress indicator showing the current stage and percentage complete.
         \item Once processing finishes, the system marks the video as searchable and notifies the user.
     \end{enumerate} \\ \hline

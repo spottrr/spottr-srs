@@ -27,7 +27,7 @@ We evaluated existing video search solutions across vocabulary flexibility and s
 
 \textbf{Twelve Labs} uses proprietary multimodal models to enable open-vocabulary search at the video segment level. However, it processes video segments as a whole rather than isolating individual objects, lacking the per-object precision that explicit segmentation provides.
 
-Our system differentiates itself by combining open-vocabulary search with region-level granularity and face recognition. By segmenting objects with SAM before encoding with a vision-language model, the system preserves the visual signal of individual items regardless of their size or position within the frame.
+Our system differentiates itself by combining open-vocabulary search with region-level granularity and face recognition. By segmenting objects with SAM 2 before encoding with a vision-language model, the system preserves the visual signal of individual items regardless of their size or position within the frame.
 
 \section{Literature Review}
 \label{section:literature-review}
@@ -42,9 +42,9 @@ Radford et al. \cite{radford2021learning} introduced CLIP, trained on 400 millio
 
 Zhai et al. \cite{zhai2025siglip2} developed SigLIP2, an improved vision-language model that uses a sigmoid loss instead of softmax contrastive loss, combined with self-distillation and masked prediction during training. On COCO text-to-image retrieval, SigLIP2 achieves 53.2\% Recall@1 compared to CLIP's 47.4\%. In our benchmark, SigLIP2 outperforms CLIP on all query categories. The architecture is encoder-agnostic; the system can use any vision-language encoder, and SigLIP2 is the current choice based on benchmark results.
 
-\subsection{SAM: Segment Anything Model}
+\subsection{SAM and SAM 2: Segment Anything Models}
 
-Kirillov et al. \cite{kirillov2023segment} developed SAM, a foundation model trained on over 1 billion masks across 11 million images. SAM can segment any object in an image without category-specific training, making it category-agnostic. By applying SAM to each video frame, our system isolates every distinct object or region, ensuring each receives its own dedicated embedding rather than being diluted within a full-frame representation. SAM segments class-agnostically at indexing time, meaning no text prompt is required and the system can handle arbitrary queries at search time without re-processing.
+Kirillov et al. \cite{kirillov2023segment} developed SAM, a foundation model trained on over 1 billion masks across 11 million images. SAM can segment any object in an image without category-specific training, making it category-agnostic. Ravi et al. \cite{ravi2024sam2} extended this work with SAM 2, which adds native support for video segmentation and object tracking across frames using a memory mechanism. Our system uses SAM 2 to take advantage of this built-in tracking, which is essential for grouping object embeddings across video frames during deduplication. By applying SAM 2 to each video frame, the system isolates every distinct object or region, ensuring each receives its own dedicated embedding rather than being diluted within a full-frame representation. SAM 2 segments class-agnostically at indexing time, meaning no text prompt is required and the system can handle arbitrary queries at search time without re-processing.
 
 \subsection{SAM-CLIP Search}
 

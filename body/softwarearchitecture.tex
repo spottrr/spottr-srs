@@ -22,7 +22,7 @@ The system consists of four main layers:
 
     \item \textbf{Storage (PostgreSQL + File Storage).} PostgreSQL with pgvector stores all object region embeddings and face embeddings with metadata (timestamps, bounding boxes, source camera) and handles vector similarity search. File Storage holds the original video files for playback when users click on a search result.
 
-    \item \textbf{AI Pipeline (SAM + SigLIP2 + Face Matching).} The core intelligence of the system. During ingestion, it segments objects (SAM), encodes object regions and whole frames (SigLIP2), applies rule-based deduplication, and detects face locations and embeddings in each frame for watchlist matching. Face embeddings are stored without identity labels and are not clustered into persistent identities. During search, it encodes the user's query (text, image, or watchlist face) into the same vector space for similarity matching.
+    \item \textbf{AI Pipeline (SAM 2 + SigLIP2 + Face Matching).} The core intelligence of the system. During ingestion, it segments and tracks objects (SAM 2), encodes object regions and whole frames (SigLIP2), applies rule-based deduplication, and detects face locations and embeddings in each frame for watchlist matching. Face embeddings are stored without identity labels and are not clustered into persistent identities. During search, it encodes the user's query (text, image, or watchlist face) into the same vector space for similarity matching.
 \end{itemize}
 
 Figure~\ref{fig:system-architecture} provides a more detailed view of the system architecture, and Figure~\ref{fig:pipelines} zooms into the AI pipeline, showing its two operating modes.
@@ -53,9 +53,9 @@ Figure~\ref{fig:system-architecture} provides a more detailed view of the system
     \label{fig:pipelines}
 \end{figure}
 
-\textbf{(a) Ingestion Pipeline.} Uploaded video is split into keyframes at 1--5 FPS. Each frame goes through two parallel paths. SAM \cite{kirillov2023segment} segments every object in the frame into regions with context padding. SigLIP2 \cite{zhai2025siglip2} then encodes each object region and the whole frame into vector embeddings. A rule-based deduplication process (see Section~\ref{subsubsec:dedup}) filters near-identical frames and groups tracked object embeddings, keeping only the best representative per object to reduce index bloat. In parallel, face detection identifies face locations and extracts face embeddings, which are stored with timestamps and bounding boxes but without identity labels or clustering. All embeddings are stored with timestamps in the vector database.
+\textbf{(a) Ingestion Pipeline.} Uploaded video is split into keyframes at 1--5 FPS. Each frame goes through two parallel paths. SAM 2 \cite{ravi2024sam2} segments every object in the frame into regions with context padding and tracks each object across frames. SigLIP2 \cite{zhai2025siglip2} then encodes each object region and the whole frame into vector embeddings. A rule-based deduplication process (see Section~\ref{subsubsec:dedup}) filters near-identical frames and groups tracked object embeddings, keeping only the best representative per object to reduce index bloat. In parallel, face detection identifies face locations and extracts face embeddings, which are stored with timestamps and bounding boxes but without identity labels or clustering. All embeddings are stored with timestamps in the vector database.
 
-\textbf{(b) Search Pipeline.} The user's text or image query is encoded into the same vector space and matched against stored object and frame embeddings. A hybrid scoring function then computes each candidate's final score as the maximum of its best object region score and whole-image score, ensuring small objects detected by SAM are not lost. For watchlist face search, the embedding extracted from a watchlist reference photo is matched against stored face embeddings using cosine similarity. Results are ranked and the corresponding frames are retrieved for display.
+\textbf{(b) Search Pipeline.} The user's text or image query is encoded into the same vector space and matched against stored object and frame embeddings. A hybrid scoring function then computes each candidate's final score as the maximum of its best object region score and whole-image score, ensuring small objects detected by SAM 2 are not lost. For watchlist face search, the embedding extracted from a watchlist reference photo is matched against stored face embeddings using cosine similarity. Results are ranked and the corresponding frames are retrieved for display.
 
 \section{Software Design}
 \label{section:software-design}
@@ -64,7 +64,7 @@ This section describes the runtime behavior of the system through sequence diagr
 
 \subsection{Video Upload and Indexing (UC-4)}
 
-The user uploads a video file through the Web App. The REST API validates the file and stores it in File Storage, then enqueues a processing job in the Task Queue. The user is free to continue using the application while processing runs in the background. The Task Queue extracts keyframes at 1--5 FPS, then runs two parallel paths: SAM segments each frame into object regions which are encoded by SigLIP2 into vector embeddings, while face detection identifies and encodes faces. A rule-based deduplication process filters near-identical frames and groups tracked object embeddings, keeping the best representative per object. All embeddings are stored in the Vector DB with timestamps and metadata. Figure~\ref{fig:seq-upload} shows this sequence of interactions.
+The user uploads a video file through the Web App. The REST API validates the file and stores it in File Storage, then enqueues a processing job in the Task Queue. The user is free to continue using the application while processing runs in the background. The Task Queue extracts keyframes at 1--5 FPS, then runs two parallel paths: SAM 2 segments and tracks each frame's objects into regions which are encoded by SigLIP2 into vector embeddings, while face detection identifies and encodes faces. A rule-based deduplication process filters near-identical frames and groups tracked object embeddings, keeping the best representative per object. All embeddings are stored in the Vector DB with timestamps and metadata. Figure~\ref{fig:seq-upload} shows this sequence of interactions.
 
 \begin{figure}[H]
     \centering
@@ -101,7 +101,7 @@ The retrieval pipeline consists of two core components: a segmentation model and
 
 \subsubsection{Segmentation Model}
 
-We use SAM (Segment Anything Model) \cite{kirillov2023segment} for class-agnostic segmentation. SAM segments every object in each frame without requiring a text prompt, which is essential for our offline indexing approach. Unlike text-prompted segmentation models such as Grounding DINO \cite{liu2023groundingdino} or OpenWorldSAM \cite{xiao2025openworldsam}, SAM does not need to know what the user will search for at indexing time. This allows the system to process footage once and handle arbitrary queries at search time.
+We use SAM 2 (Segment Anything Model 2) \cite{ravi2024sam2} for class-agnostic segmentation and tracking. SAM 2 segments every object in each frame without requiring a text prompt and propagates object identities across frames using a memory mechanism, which is essential for our offline indexing approach and for the rule-based deduplication described in Section~\ref{subsubsec:dedup}. Unlike text-prompted segmentation models such as Grounding DINO \cite{liu2023groundingdino} or OpenWorldSAM \cite{xiao2025openworldsam}, SAM 2 does not need to know what the user will search for at indexing time. This allows the system to process footage once and handle arbitrary queries at search time.
 
 \subsubsection{Vision-Language Encoder Selection}
 
@@ -127,7 +127,7 @@ SigLIP2 achieves the highest scores on all metrics, making it the initial select
 
 \subsubsection{Effect of SAM Segmentation}
 
-We then paired SAM with each encoder using our hybrid scoring approach, where the final score for each image is the maximum of the best object region score and the whole-image score. Table~\ref{tab:sam-effect} shows the results.
+We then paired SAM with each encoder using our hybrid scoring approach, where the final score for each image is the maximum of the best object region score and the whole-image score. These preliminary benchmarks were run with the original SAM \cite{kirillov2023segment}; the production pipeline uses SAM 2 \cite{ravi2024sam2}, which provides comparable segmentation quality together with native video tracking. Table~\ref{tab:sam-effect} shows the results.
 
 \begin{table}[H]
     \centering
@@ -152,9 +152,9 @@ Adding SAM segmentation improves both encoders, and the stronger encoder (SigLIP
 In video, the same object can appear across hundreds of frames, producing near-identical embeddings that bloat the index and fill search results with duplicates. The system addresses this with a two-stage rule-based deduplication approach:
 
 \begin{enumerate}
-    \item \textbf{Frame-level filtering.} Each frame is encoded by the image-text encoder (SigLIP2) and compared against the previous frame. If similarity exceeds a threshold, the frame is skipped, reducing the number of frames SAM needs to process.
+    \item \textbf{Frame-level filtering.} Each frame is encoded by the image-text encoder (SigLIP2) and compared against the previous frame. If similarity exceeds a threshold, the frame is skipped, reducing the number of frames SAM 2 needs to process.
 
-    \item \textbf{Object-level deduplication.} Tracked object embeddings are compared within a sliding window (5 frames, 3-frame overlap). Only the best representative per object is kept, selected by highest SAM confidence score.
+    \item \textbf{Object-level deduplication.} Tracked object embeddings are compared within a sliding window (5 frames, 3-frame overlap). Only the best representative per object is kept, selected by highest SAM 2 confidence score.
 \end{enumerate}
 
 This rule-based approach requires no training data or learned weights. It extends region-based retrieval from static images to video in a simple and practical way. Existing work like SAM-CLIP Search \cite{mulani2025samclip} operates only on static images; this deduplication mechanism is what makes the pipeline practical for real surveillance footage where objects move, get occluded, and appear across hundreds of frames.
@@ -168,6 +168,6 @@ Faces are detected in each frame using InsightFace \cite{deng2019arcface}. To su
 The system will be evaluated on two levels:
 
 \begin{enumerate}
-    \item \textbf{Retrieval quality.} Recall@5, Precision@5, and F1@5 on COCO val2017, comparing the full pipeline (SAM + SigLIP2) against whole-image baselines (CLIP, SigLIP2, BLIP) and segmentation baselines (SAM + CLIP). Query categories include simple objects and small/background objects (objects occupying less than 10\% of image area). The Precision-Recall tradeoff will be analyzed to find the optimal operating point.
+    \item \textbf{Retrieval quality.} Recall@5, Precision@5, and F1@5 on COCO val2017, comparing the full pipeline (SAM 2 + SigLIP2) against whole-image baselines (CLIP, SigLIP2, BLIP) and segmentation baselines (SAM + CLIP). Query categories include simple objects and small/background objects (objects occupying less than 10\% of image area). The Precision-Recall tradeoff will be analyzed to find the optimal operating point.
     \item \textbf{End-to-end system.} Query latency, indexing throughput (frames per second), and storage efficiency (embeddings per video minute). User testing with real surveillance footage to assess practical usability.
 \end{enumerate}

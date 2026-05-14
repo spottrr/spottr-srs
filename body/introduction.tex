@@ -60,7 +60,7 @@ All users have access to the same features. The system must be simple enough tha
     \item[Vision-Language Model] A model that maps both images and text into a shared vector space, enabling cross-modal similarity search. Examples include CLIP and SigLIP2.
     \item[CLIP] Contrastive Language-Image Pretraining \cite{radford2021learning}. A vision-language model by OpenAI trained on 400 million image-text pairs.
     \item[SigLIP2] An improved vision-language model by Google \cite{zhai2025siglip2} with better training objectives and higher retrieval accuracy than CLIP.
-    \item[SAM] Segment Anything Model \cite{kirillov2023segment}. Segments any object in an image without category-specific training.
+    \item[SAM 2] Segment Anything Model 2 \cite{ravi2024sam2}. Segments any object in images and videos without category-specific training, and tracks objects across frames using a memory mechanism.
     \item[Object Region Embedding] A vector embedding produced by encoding an individual segmented object region through a vision-language model.
     \item[Face Similarity] The process of detecting faces, generating face embeddings, and comparing them via vector similarity to match an individual against a watchlist reference photo.
     \item[Watchlist] A user-curated set of reference photos of specific individuals the user is authorized to search for. Face embeddings are extracted from these photos and matched against faces detected in the footage at search time.
